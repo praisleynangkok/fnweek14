@@ -1,0 +1,35 @@
+﻿@page "/products/{Id:int}"
+@layout SecondaryLayout
+@using BlazorDataApp.Data
+@inject ProductService ProductService
+
+<h3>Product Details</h3>
+
+@if (product == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="card">
+        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" />
+        <div class="card-body">
+            <h5 class="card-title">@product.Name</h5>
+            <p class="card-text">@product.Description</p>
+            <p class="text-success fw-bold">@product.Price:C</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var products = await ProductService.GetProductsAsync();
+        product = products.FirstOrDefault(p => p.Id == Id);
+    }
+}

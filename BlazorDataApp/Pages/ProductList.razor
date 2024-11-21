@@ -1,0 +1,74 @@
+﻿@page "/products"
+@using BlazorDataApp.Data
+@inject ProductService ProductService
+
+<div class="container">
+    <h3>Blazing Pizzas</h3>
+
+    @if (products == null)
+    {
+        <p>Loading products...</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var product in products)
+            {
+                <div class="col-md-4 col-sm-6 col-xs-12 mb-4">
+                    <ProductCard Product="@product" />
+                </div>
+            }
+
+
+            }
+        </div>
+    }
+
+    <h3 class="mt-4">Add New Product</h3>
+    <EditForm Model="@newProduct" OnValidSubmit="@AddProduct">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="newProduct.Name" />
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <InputText id="description" class="form-control" @bind-Value="newProduct.Description" />
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <InputNumber id="price" class="form-control" @bind-Value="newProduct.Price" />
+        </div>
+        <div class="mb-3">
+            <label for="imageUrl" class="form-label">Image URL</label>
+            <InputText id="imageUrl" class="form-control" @bind-Value="newProduct.ImageUrl" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </EditForm>
+</div>
+
+@code {
+    private List<Product>? products;
+    private Product newProduct = new Product();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetProductsAsync();
+    }
+
+    private void AddProduct()
+    {
+        if (products != null)
+        {
+            products.Add(new Product
+                {
+                    Id = products.Count + 1,
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    ImageUrl = newProduct.ImageUrl
+                });
+
+            newProduct = new Product();
+        }
+    }
+}
